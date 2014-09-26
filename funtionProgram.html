@@ -79,116 +79,20 @@
                 },
                 _this={},
                 a=document.getElementById(spec["number"]).getElementsByTagName("A"),
-                my={
-                    $:"",
-                    change:-210,
-                    d:50,
-                    num:3,
-                    au:true,
-                    index:0,
-                    x:null,
-                    v:null
-                },
-                tween=function(t,b,c,d){
-                    return -c*(t/=d)*(t-2)+b;
-                },
-                autoo=function(){
-                    _this.show( my.index+1 > my.num ? 0 : my.index+1);
-                };
-        Extend(my,spec);
-
-        for(var i=0 ;i< a.length ;i++){
-            a[i].onmouseover=(function(i){
-                return function(){
-                    _this.go(i)
-                }
-            })(i);
-            a[i].onmouseout=(function(i){
-                return function(){
-                    _this.auto()
-                }
-            })(i);
-        }
-        //
-        _this.show=function(n){
-            if(typeof my.x == "number"){
-                _this.stop();
-            }
-            var t=0,n=n,b=parseInt(my.$.style.marginTop),c=n*my.change-b,
-                    o=function(){
-                        t++;
-                        if(t==my.d+1){
-                            _this.stop();
-                        }else{
-                            my.$.style.marginTop=tween(t,b,c,my.d)+"px";
-                            my.x=setTimeout(o,10);
-                        }
-                    };
-            a[my.index].className="";
-            a[n].className="sel";
-            my.index=n;
-            o();
-        };
-        _this.stop=function(){
-            clearTimeout(my.x);my.x=null;
-        };
-        _this.auto=function(){
-            _this=this;
-            my.v=setInterval(autoo,3000);
-        };
-        _this.go=function(n){
-            clearInterval(my.v);
-            this.show(n);
-        };
-        if(my.au){_this.auto();};
-        return _this;
-    };
-    // aa, bb could run seperately, bb,aa 两个不同的动画，不会互相影响
-    var bb=photo({
-        $:document.getElementById("photo2"),
-        number:"number2",
-        change:-210,
-        num:3
-    });
-    var aa=photo({
-        $:document.getElementById("photo"),
-        change:-210,
-        number:"number",
-        num:4
-    });
-    </pre>
-</div>
-
-<script type="text/javascript">
-    //Analog jquery $.extend
-    var Extend = function(destination, source) {
-        for (var property in source) {
-            destination[property] = source[property];
-        }
-        return destination;
-    };
-
-    var photo=function(spec){
-        //Analog jquery $
-        var $ = function(id){
-                    return document.getElementById(id);
-                },
-                _this={},
-                a=document.getElementById(spec["number"]).getElementsByTagName("A"),
                 my={           // default parameters
                     $:"",
-                    change:-210,
+                    change:-210,  // height of images
                     d:50,
                     num:3,
                     au:true,
-                    index:0,
+                    index:0,     // first index of images
                     x:null,
                     v:null
                 },
                 tween=function(t,b,c,d){
                     return -c*(t/=d)*(t-2)+b;
                 },
-                autoo=function(){
+                autoo=function(){     //循环到最后一个slide时候切换到第一个slide
                     _this.show( my.index+1 > my.num ? 0 : my.index+1);
                 };
         Extend(my,spec);
@@ -226,7 +130,7 @@
             o();
         };
         _this.stop=function(){
-            clearTimeout(my.x);my.x=null;
+            clearTimeout(my.x);  my.x=null;
         };
         _this.auto=function(){
             _this=this;
@@ -236,12 +140,108 @@
             clearInterval(my.v);
             this.show(n);
         };
-        if(my.au){_this.auto();};
+        if(my.au){ _this.auto(); }
         return _this;
     };
     // aa, bb could run seperately, bb,aa 两个不同的动画，不会互相影响
     var bb=photo({
         $:document.getElementById("photo2"),
+        index:2,
+        number:"number2",
+        num:3
+    });
+    var aa=photo({
+        $:document.getElementById("photo"),
+        number:"number",
+        num:4
+    });
+    </pre>
+</div>
+
+<script type="text/javascript">
+    //Analog jquery $.extend
+    var Extend = function(destination, source) {
+        for (var property in source) {
+            destination[property] = source[property];
+        }
+        return destination;
+    };
+
+    var photo=function(spec){
+        //Analog jquery $
+        var $ = function(id){
+                    return document.getElementById(id);
+                },
+                _this={},
+                a=document.getElementById(spec["number"]).getElementsByTagName("A"),
+                my={           // default parameters
+                    $:"",
+                    change:-210,  // height of images
+                    d:50,
+                    num:3,
+                    au:true,
+                    index:0,     // first index of images
+                    x:null,
+                    v:null
+                },
+                tween=function(t,b,c,d){
+                    return -c*(t/=d)*(t-2)+b;
+                },
+                autoo=function(){     //循环到最后一个slide时候切换到第一个slide
+                    _this.show( my.index+1 > my.num ? 0 : my.index+1);
+                };
+        Extend(my,spec);
+
+        for(var i=0 ;i<a.length ;i++){
+            a[i].onmouseover=(function(i){
+                return function(){
+                    _this.go(i)
+                }
+            })(i);
+            a[i].onmouseout=(function(i){
+                return function(){
+                    _this.auto()
+                }
+            })(i);
+        }
+        //
+        _this.show=function(n){
+            if(typeof my.x == "number"){
+                _this.stop();
+            }
+            var t=0,n=n,b=parseInt(my.$.style.marginTop),c=n*my.change-b,
+                    o=function(){
+                        t++;
+                        if(t==my.d+1){
+                            _this.stop();
+                        }else{
+                            my.$.style.marginTop=tween(t,b,c,my.d)+"px";
+                            my.x=setTimeout(o,10);
+                        }
+                    };
+            a[my.index].className="";
+            a[n].className="sel";
+            my.index=n;
+            o();
+        };
+        _this.stop=function(){
+            clearTimeout(my.x);  my.x=null;
+        };
+        _this.auto=function(){
+            _this=this;
+            my.v=setInterval(autoo,3000);
+        };
+        _this.go=function(n){
+            clearInterval(my.v);
+            this.show(n);
+        };
+        if(my.au){ _this.auto(); }
+        return _this;
+    };
+    // aa, bb could run seperately, bb,aa 两个不同的动画，不会互相影响
+    var bb=photo({
+        $:document.getElementById("photo2"),
+        index:2,
         number:"number2",
         num:3
     });
