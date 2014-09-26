@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>图片轮换--函数化继承</title>
+    <link href="prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="prettify/prettify.js"></script>
+</head>
+<body onload="prettyPrint()">
+<style type="text/css">
+    body,ul,li{ margin:0; padding:0;}
+    #div{width:610px;height:210px;overflow:hidden;}
+    #photo li{height:210px; overflow:hidden; background:#fff url(001.gif) no-repeat center center;}
+    #photo2 li{height:210px; overflow:hidden; background:#fff url(001.gif) no-repeat center center;}
+    .number-warp{position:absolute;margin-top:-50px;width:600px; text-align:right;}
+    .number-warp a{border:1px solid #CCC; width:30px; height:30px; display:inline-block; height:100%;margin-left:5px; text-align:center; text-decoration:none;}
+    .sel{background:#CCC;}
+</style>
+<div style="width:610px;overflow:hidden; margin:10px auto; ">
+    <pre class="prettyprint">
+    //这个方法是 《javascript语言精粹》第52页"5.4函数化"上的
+    var constructor = function (spec,my){
+       var that,其他的私有实例变量;
+       my = my || {};        //把共享的变量和函数添加到my中
+       that = 一个新对象;    //添加给that 的特权方法
+       return that;
+    }
+    </pre>
+</div>
+<div style="width:610px;height:210px;overflow:hidden; margin:10px auto;border:1px solid #000;">
+    <div id="div">
+        <ul id="photo" style="margin-top:0px;">
+            <li><img src="images/r_img1.jpg" /></li>
+            <li><img src="images/r_img2.jpg" /></li>
+            <li><img src="images/r_img3.jpg" /></li>
+            <li><img src="images/r_img4.jpg" /></li>
+            <li><img src="images/r_img5.jpg" /></li>
+        </ul>
+    </div>
+    <div class="number-warp" id="number">
+        <a href="#" class="sel">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+    </div>
+</div>
+
+<div style="width:610px;height:210px;overflow:hidden; margin:10px auto;border:1px solid #000;">
+    <div id="div">
+        <ul id="photo2" style="margin-top:0px;">
+            <li><img src="images/r_img1.jpg" /></li>
+            <li><img src="images/r_img2.jpg" /></li>
+            <li><img src="images/r_img3.jpg" /></li>
+            <li><img src="images/r_img4.jpg" /></li>
+        </ul>
+    </div>
+    <div class="number-warp" id="number2">
+        <a href="#" class="sel">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+    </div>
+</div>
+<div style="width:610px;overflow:hidden; margin:10px auto;">
+    <pre class="prettyprint">
+    //Analog jquery $.extend
+    var Extend = function(destination, source) {
+        for (var property in source) {
+            destination[property] = source[property];
+        }
+        return destination;
+    };
+
+    var photo=function(spec){
+        //Analog jquery $
+        var $ = function(id){
+                    return document.getElementById(id);
+                },
+                _this={},
+                a=document.getElementById(spec["number"]).getElementsByTagName("A"),
+                my={
+                    $:"",
+                    change:-210,
+                    d:50,
+                    num:3,
+                    au:true,
+                    index:0,
+                    x:null,
+                    v:null
+                },
+                tween=function(t,b,c,d){
+                    return -c*(t/=d)*(t-2)+b;
+                },
+                autoo=function(){
+                    _this.show( my.index+1 > my.num ? 0 : my.index+1);
+                };
+        Extend(my,spec);
+
+        for(var i=0 ;i< a.length ;i++){
+            a[i].onmouseover=(function(i){
+                return function(){
+                    _this.go(i)
+                }
+            })(i);
+            a[i].onmouseout=(function(i){
+                return function(){
+                    _this.auto()
+                }
+            })(i);
+        }
+        //
+        _this.show=function(n){
+            if(typeof my.x == "number"){
+                _this.stop();
+            }
+            var t=0,n=n,b=parseInt(my.$.style.marginTop),c=n*my.change-b,
+                    o=function(){
+                        t++;
+                        if(t==my.d+1){
+                            _this.stop();
+                        }else{
+                            my.$.style.marginTop=tween(t,b,c,my.d)+"px";
+                            my.x=setTimeout(o,10);
+                        }
+                    };
+            a[my.index].className="";
+            a[n].className="sel";
+            my.index=n;
+            o();
+        };
+        _this.stop=function(){
+            clearTimeout(my.x);my.x=null;
+        };
+        _this.auto=function(){
+            _this=this;
+            my.v=setInterval(autoo,3000);
+        };
+        _this.go=function(n){
+            clearInterval(my.v);
+            this.show(n);
+        };
+        if(my.au){_this.auto();};
+        return _this;
+    };
+    // aa, bb could run seperately, bb,aa 两个不同的动画，不会互相影响
+    var bb=photo({
+        $:document.getElementById("photo2"),
+        number:"number2",
+        change:-210,
+        num:3
+    });
+    var aa=photo({
+        $:document.getElementById("photo"),
+        change:-210,
+        number:"number",
+        num:4
+    });
+    </pre>
+</div>
+
+<script type="text/javascript">
+    //Analog jquery $.extend
+    var Extend = function(destination, source) {
+        for (var property in source) {
+            destination[property] = source[property];
+        }
+        return destination;
+    };
+
+    var photo=function(spec){
+        //Analog jquery $
+        var $ = function(id){
+                    return document.getElementById(id);
+                },
+                _this={},
+                a=document.getElementById(spec["number"]).getElementsByTagName("A"),
+                my={           // default parameters
+                    $:"",
+                    change:-210,
+                    d:50,
+                    num:3,
+                    au:true,
+                    index:0,
+                    x:null,
+                    v:null
+                },
+                tween=function(t,b,c,d){
+                    return -c*(t/=d)*(t-2)+b;
+                },
+                autoo=function(){
+                    _this.show( my.index+1 > my.num ? 0 : my.index+1);
+                };
+        Extend(my,spec);
+
+        for(var i=0 ;i<a.length ;i++){
+            a[i].onmouseover=(function(i){
+                return function(){
+                    _this.go(i)
+                }
+            })(i);
+            a[i].onmouseout=(function(i){
+                return function(){
+                    _this.auto()
+                }
+            })(i);
+        }
+        //
+        _this.show=function(n){
+            if(typeof my.x == "number"){
+                _this.stop();
+            }
+            var t=0,n=n,b=parseInt(my.$.style.marginTop),c=n*my.change-b,
+                    o=function(){
+                        t++;
+                        if(t==my.d+1){
+                            _this.stop();
+                        }else{
+                            my.$.style.marginTop=tween(t,b,c,my.d)+"px";
+                            my.x=setTimeout(o,10);
+                        }
+                    };
+            a[my.index].className="";
+            a[n].className="sel";
+            my.index=n;
+            o();
+        };
+        _this.stop=function(){
+            clearTimeout(my.x);my.x=null;
+        };
+        _this.auto=function(){
+            _this=this;
+            my.v=setInterval(autoo,3000);
+        };
+        _this.go=function(n){
+            clearInterval(my.v);
+            this.show(n);
+        };
+        if(my.au){_this.auto();};
+        return _this;
+    };
+    // aa, bb could run seperately, bb,aa 两个不同的动画，不会互相影响
+    var bb=photo({
+        $:document.getElementById("photo2"),
+        number:"number2",
+        num:3
+    });
+    var aa=photo({
+        $:document.getElementById("photo"),
+        number:"number",
+        num:4
+    });
+</script>
+</body>
+</html>
